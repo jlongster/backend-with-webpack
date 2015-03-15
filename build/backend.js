@@ -48,7 +48,6 @@ require("source-map-support").install();
 	var express = __webpack_require__(1);
 	var index = __webpack_require__(2);
 	var page = __webpack_require__(3);
-	// var chokidar = require('chokidar');
 
 	var app = express();
 	app.get('/', index);
@@ -68,12 +67,10 @@ require("source-map-support").install();
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// Normally, you'd run this through an ES6 compiler so that
-	// you could use stuff like destructuring!
 	var t = __webpack_require__(4);
 
 	module.exports = function(req, res) {
-	  var arr = JSON.parse(req.query.arr);
+	  var arr = JSON.parse(req.query.arr || '[]');
 	  res.send(t.map(arr, function(x) { return x + 1; }));
 	};
 

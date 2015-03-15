@@ -2,10 +2,16 @@ var webpack = require('webpack');
 var path = require('path');
 var fs = require('fs');
 
-var blacklist = ['.bin'];
-var node_modules = fs.readdirSync('node_modules').filter(
-  function(x) { return blacklist.indexOf(x) === -1; }
-);
+var node_modules = {};
+fs.readdirSync('node_modules')
+  .filter(function(x) {
+    return ['.bin'].indexOf(x) === -1;
+  })
+  .forEach(function(mod) {
+    node_modules[mod] = 'commonjs ' + mod;
+  });
+
+console.log(node_modules);
 
 module.exports = {
   entry: './src/main.js',
@@ -21,13 +27,7 @@ module.exports = {
       {test: /\.json$/, loader: 'json'}
     ]
   },
-  externals: function(context, request, cb) {
-    if(node_modules.indexOf(request) !== -1) {
-      cb(null, 'commonjs ' + request);
-      return;
-    }
-    cb();
-  },
+  externals: node_modules,
   plugins: [
     new webpack.IgnorePlugin(/\.(css|less)$/),
     new webpack.BannerPlugin('require("source-map-support").install();',
