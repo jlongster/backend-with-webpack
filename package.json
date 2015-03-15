@@ -1,0 +1,9 @@
+{
+  "name": "backend-with-webpack",
+  "dependencies": {
+    "express": "^4.12.2",
+    "source-map-support": "^0.2.10",
+    "transducers.js": "^0.2.3",
+    "webpack": "^1.7.3"
+  }
+}
