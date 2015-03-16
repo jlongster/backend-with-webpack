@@ -53,8 +53,6 @@ require("source-map-support").install();
 	app.get('/', index);
 	app.get('/page', page);
 	
-	foo();
-	
 	console.log("Listening on port 4000...");
 	app.listen(4000);
 
