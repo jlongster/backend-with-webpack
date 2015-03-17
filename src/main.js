@@ -1,6 +1,6 @@
-var express = require('express');
-var index = require('./index');
-var page = require('./page');
+import express from 'express';
+import index from './index';
+import page from './page';
 
 var app = express();
 app.get('/', index);

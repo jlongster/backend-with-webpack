@@ -18,6 +18,11 @@ module.exports = {
     path: path.join(__dirname, 'build'),
     filename: 'backend.js'
   },
+  module: {
+    loaders: [
+      {test: /\.js$/, exclude: /node_modules/, loaders: ['babel'] },
+    ]
+  },
   externals: nodeModules,
   plugins: [
     new webpack.IgnorePlugin(/\.(css|less)$/),

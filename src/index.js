@@ -1,6 +1,6 @@
-var t = require('transducers.js');
+import t from 'transducers.js';
 
-module.exports = function(req, res) {
+export default function(req, res) {
   var arr = JSON.parse(req.query.arr || '[]');
   res.send(t.map(arr, function(x) { return x + 1; }));
 };

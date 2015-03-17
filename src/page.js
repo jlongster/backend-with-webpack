@@ -1,3 +1,3 @@
-module.exports = function(req, res) {
+export default function(req, res) {
   res.send('page');
 };

@@ -45,17 +45,22 @@ require("source-map-support").install();
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var express = __webpack_require__(1);
-	var index = __webpack_require__(2);
-	var page = __webpack_require__(3);
+	"use strict";
+	
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+	
+	var express = _interopRequire(__webpack_require__(1));
+	
+	var index = _interopRequire(__webpack_require__(2));
+	
+	var page = _interopRequire(__webpack_require__(3));
 	
 	var app = express();
-	app.get('/', index);
-	app.get('/page', page);
+	app.get("/", index);
+	app.get("/page", page);
 	
 	console.log("Listening on port 4000...");
 	app.listen(4000);
-
 
 /***/ },
 /* 1 */
@@ -67,22 +72,28 @@ require("source-map-support").install();
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var t = __webpack_require__(4);
+	"use strict";
 	
-	module.exports = function(req, res) {
-	  var arr = JSON.parse(req.query.arr || '[]');
-	  res.send(t.map(arr, function(x) { return x + 1; }));
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+	
+	var t = _interopRequire(__webpack_require__(4));
+	
+	module.exports = function (req, res) {
+	  var arr = JSON.parse(req.query.arr || "[]");
+	  res.send(t.map(arr, function (x) {
+	    return x + 1;
+	  }));
 	};
-
 
 /***/ },
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = function(req, res) {
-	  res.send('page');
+	"use strict";
+	
+	module.exports = function (req, res) {
+	  res.send("page");
 	};
-
 
 /***/ },
 /* 4 */
