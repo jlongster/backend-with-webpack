@@ -1,3 +1,4 @@
+var gulp = require('gulp');
 var webpack = require('webpack');
 var path = require('path');
 var fs = require('fs');
@@ -11,7 +12,7 @@ fs.readdirSync('node_modules')
     nodeModules[mod] = 'commonjs ' + mod;
   });
 
-module.exports = {
+var config = {
   entry: './src/main.js',
   target: 'node',
   output: {
@@ -31,3 +32,15 @@ module.exports = {
   ],
   devtool: 'sourcemap'
 }
+
+gulp.task('backend-build', function(done) {
+  webpack(config).run(function(err, stats) {
+    if(err) {
+      console.log('Error', err);
+    }
+    else {
+      console.log(stats.toString());
+    }
+    done();
+  });
+});
