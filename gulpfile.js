@@ -3,6 +3,7 @@ var webpack = require('webpack');
 var path = require('path');
 var fs = require('fs');
 var DeepMerge = require('deep-merge');
+var nodemon = require('nodemon');
 
 var deepmerge = DeepMerge(function(target, source, key) {
   if(target instanceof Array) {
@@ -76,7 +77,10 @@ function onBuild(done) {
     else {
       console.log(stats.toString());
     }
-    done();
+
+    if(done) {
+      done();
+    }
   }
 }
 
@@ -85,16 +89,33 @@ gulp.task('frontend-build', function(done) {
 });
 
 gulp.task('frontend-watch', function() {
-  webpack(frontendConfig).watch(onBuild(done));
+  webpack(frontendConfig).watch(100, onBuild());
 });
 
 gulp.task('backend-build', function(done) {
   webpack(backendConfig).run(onBuild(done));
 });
 
-gulp.task('backend-watch', function(done) {
-  webpack(backendConfig).watch(onBuild(done));
+gulp.task('backend-watch', function() {
+  webpack(backendConfig).watch(100, function(err, stats) {
+    onBuild()(err, stats);
+    nodemon.restart();
+  });
 });
 
 gulp.task('build', ['frontend-build', 'backend-build']);
 gulp.task('watch', ['frontend-watch', 'backend-watch']);
+
+gulp.task('run', ['backend-watch', 'frontend-watch'], function() {
+  nodemon({
+    execMap: {
+      js: 'node'
+    },
+    script: path.join(__dirname, 'build/backend'),
+    ignore: ['*'],
+    watch: ['foo/'],
+    ext: 'noop'
+  }).on('restart', function() {
+    console.log('Restarted!');
+  });
+});
