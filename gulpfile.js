@@ -59,6 +59,10 @@ var backendConfig = config({
     path: path.join(__dirname, 'build'),
     filename: 'backend.js'
   },
+  node: {
+    __dirname: true,
+    __filename: true
+  },
   externals: nodeModules,
   plugins: [
     new webpack.IgnorePlugin(/\.(css|less)$/),
