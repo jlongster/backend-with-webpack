@@ -23,7 +23,7 @@ var defaultConfig = {
 };
 
 if(process.env.NODE_ENV !== 'production') {
-  defaultConfig.devtool = 'source-map';
+  defaultConfig.devtool = '#eval-source-map';
   defaultConfig.debug = true;
 }
 
