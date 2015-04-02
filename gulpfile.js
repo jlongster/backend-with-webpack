@@ -4,6 +4,7 @@ var path = require('path');
 var fs = require('fs');
 var DeepMerge = require('deep-merge');
 var nodemon = require('nodemon');
+var WebpackDevServer = require('webpack-dev-server');
 
 var deepmerge = DeepMerge(function(target, source, key) {
   if(target instanceof Array) {
@@ -17,13 +18,14 @@ var deepmerge = DeepMerge(function(target, source, key) {
 var defaultConfig = {
   module: {
     loaders: [
-      {test: /\.js$/, exclude: /node_modules/, loaders: ['babel'] },
+      {test: /\.js$/, exclude: /node_modules/, loaders: ['monkey-hot', 'babel'] },
     ]
   }
 };
 
 if(process.env.NODE_ENV !== 'production') {
-  defaultConfig.devtool = '#eval-source-map';
+  //defaultConfig.devtool = '#eval-source-map';
+  defaultConfig.devtool = 'source-map';
   defaultConfig.debug = true;
 }
 
@@ -34,11 +36,19 @@ function config(overrides) {
 // frontend
 
 var frontendConfig = config({
-  entry: './static/js/main.js',
+  entry: [
+    'webpack-dev-server/client?http://localhost:3000',
+    'webpack/hot/only-dev-server',
+    './static/js/main.js'
+  ],
   output: {
     path: path.join(__dirname, 'static/build'),
+    publicPath: 'http://localhost:3000/build',
     filename: 'frontend.js'
-  }
+  },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin({ quiet: true })
+  ]
 });
 
 // backend
@@ -53,7 +63,10 @@ fs.readdirSync('node_modules')
   });
 
 var backendConfig = config({
-  entry: './src/main.js',
+  entry: [
+    'webpack/hot/signal.js',
+    './src/main.js'
+  ],
   target: 'node',
   output: {
     path: path.join(__dirname, 'build'),
@@ -64,10 +77,12 @@ var backendConfig = config({
     __filename: true
   },
   externals: nodeModules,
+  recordsPath: path.join(__dirname, 'build/_records'),
   plugins: [
     new webpack.IgnorePlugin(/\.(css|less)$/),
     new webpack.BannerPlugin('require("source-map-support").install();',
-                             { raw: true, entryOnly: false })
+                             { raw: true, entryOnly: false }),
+    new webpack.HotModuleReplacementPlugin({ quiet: true })
   ]
 });
 
@@ -93,16 +108,34 @@ gulp.task('frontend-build', function(done) {
 });
 
 gulp.task('frontend-watch', function() {
-  webpack(frontendConfig).watch(100, onBuild());
+  //webpack(frontendConfig).watch(100, onBuild());
+
+  new WebpackDevServer(webpack(frontendConfig), {
+    publicPath: frontendConfig.output.publicPath,
+    hot: true
+  }).listen(3000, 'localhost', function (err, result) {
+    if(err) {
+      console.log(err);
+    }
+    else {
+      console.log('webpack dev server listening at localhost:3000');
+    }
+  });
+
 });
 
 gulp.task('backend-build', function(done) {
   webpack(backendConfig).run(onBuild(done));
 });
 
-gulp.task('backend-watch', function() {
+gulp.task('backend-watch', function(done) {
+  var firedDone = false;
   webpack(backendConfig).watch(100, function(err, stats) {
-    onBuild()(err, stats);
+    if(!firedDone) {
+      firedDone = true;
+      done();
+    }
+
     nodemon.restart();
   });
 });
@@ -120,6 +153,6 @@ gulp.task('run', ['backend-watch', 'frontend-watch'], function() {
     watch: ['foo/'],
     ext: 'noop'
   }).on('restart', function() {
-    console.log('Restarted!');
+    console.log('Patched!');
   });
 });

@@ -1,3 +1,11 @@
-import t from 'transducers.js';
+import * as client from './client';
 
-console.log(t.map([1, 2, 3], x => x + 1));
+var socket = io.connect('http://localhost:4000', {
+  reconnection: false
+});
+
+socket.on('connect', () => {
+  client.register(socket);
+});
+
+
