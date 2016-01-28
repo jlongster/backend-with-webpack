@@ -4,6 +4,7 @@ var path = require('path');
 var fs = require('fs');
 var DeepMerge = require('deep-merge');
 var nodemon = require('nodemon');
+var nodeExternals = require('webpack-node-externals');
 var WebpackDevServer = require('webpack-dev-server');
 
 var deepmerge = DeepMerge(function(target, source, key) {
@@ -53,11 +54,6 @@ var frontendConfig = config({
 
 // backend
 
-var nodeModules = fs.readdirSync('node_modules')
-  .filter(function(x) {
-    return ['.bin'].indexOf(x) === -1;
-  });
-
 var backendConfig = config({
   entry: [
     'webpack/hot/signal.js',
@@ -73,13 +69,9 @@ var backendConfig = config({
     __filename: true
   },
   externals: [
-    function(context, request, callback) {
-      var pathStart = request.split('/')[0];
-      if (nodeModules.indexOf(pathStart) >= 0 && request != 'webpack/hot/signal.js') {
-        return callback(null, "commonjs " + request);
-      };
-      callback();
-    }
+    nodeExternals({
+      whitelist: ['webpack/hot/signal.js']
+    })
   ],
   recordsPath: path.join(__dirname, 'build/_records'),
   plugins: [

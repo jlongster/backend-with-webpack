@@ -11,6 +11,7 @@
     "source-map-support": "^0.2.10",
     "transducers.js": "^0.2.3",
     "webpack": "^1.7.3",
-    "webpack-dev-server": "^1.7.0"
+    "webpack-dev-server": "^1.7.0",
+    "webpack-node-externals": "^0.4.0"
   }
 }
